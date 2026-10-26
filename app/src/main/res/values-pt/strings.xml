@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Condutor</string>
+    <string name="auth_title">Iniciar sessão</string>
+    <string name="auth_phone_hint">Número de telefone</string>
+    <string name="auth_phone_prefix">+244</string>
+    <string name="auth_send_otp">Enviar código</string>
+    <string name="auth_otp_title">Introduza o código</string>
+    <string name="auth_otp_sent">Código enviado para %1$s</string>
+    <string name="auth_otp_hint">Código de 4 dígitos</string>
+    <string name="auth_verify">Confirmar</string>
+    <string name="auth_change_number">Alterar número</string>
+    <string name="auth_error_invalid_phone">Introduza um número angolano válido.</string>
+    <string name="auth_error_invalid_code">Introduza o código de 4 dígitos.</string>
+    <string name="auth_error_request">Não foi possível contactar o servidor. Tente novamente.</string>
+</resources>
