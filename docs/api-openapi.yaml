@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: Driver API
+  version: "1"
+servers:
+  - url: https://api.example.ao/v1
+paths:
+  /auth/otp/send:
+    post:
+      operationId: sendOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone:
+                  type: string
+                  example: "+244912345678"
+      responses:
+        "200":
+          description: OTP dispatched
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [otpSent]
+                properties:
+                  otpSent:
+                    type: boolean
+  /auth/otp/verify:
+    post:
+      operationId: verifyOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, code]
+              properties:
+                phone:
+                  type: string
+                code:
+                  type: string
+                  example: "1234"
+      responses:
+        "200":
+          description: Session
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token, driverId, expiresAt]
+                properties:
+                  token:
+                    type: string
+                  driverId:
+                    type: string
+                  expiresAt:
+                    type: string
+  /auth/refresh:
+    post:
+      operationId: refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: New access token
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token, expiresAt]
+                properties:
+                  token:
+                    type: string
+                  expiresAt:
+                    type: string
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+security:
+  - bearer: []
