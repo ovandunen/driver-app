@@ -1,6 +1,7 @@
 package ao.ridehailing.driver.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ao.ridehailing.driver.BuildConfig
 import ao.ridehailing.driver.core.storage.TokenStore
 import ao.ridehailing.driver.feature.activeride.ActiveRideScreen
 import ao.ridehailing.driver.feature.auth.AuthScreen
@@ -46,22 +48,35 @@ object Routes {
 
 @HiltViewModel
 class SessionViewModel @Inject constructor(store: TokenStore) : ViewModel() {
-    val driverId: String = store.driverId() ?: "D-1"
+    val driverId: String = if (BuildConfig.DEV_BYPASS_LOGIN) {
+        BuildConfig.DEV_DRIVER_ID
+    } else {
+        store.driverId() ?: "D-1"
+    }
 }
 
 @Composable
 fun AppRoot(session: SessionViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val driverId = session.driverId
-    NavHost(navController = navController, startDestination = Routes.Auth) {
+    val startDest = if (BuildConfig.DEV_BYPASS_LOGIN) Routes.Home else Routes.Auth
+    NavHost(navController = navController, startDestination = startDest) {
         composable(Routes.Auth) {
-            AuthScreen(
-                onAuthenticated = {
+            if (BuildConfig.DEV_BYPASS_LOGIN) {
+                LaunchedEffect(Unit) {
                     navController.navigate(Routes.Home) {
                         popUpTo(Routes.Auth) { inclusive = true }
                     }
-                },
-            )
+                }
+            } else {
+                AuthScreen(
+                    onAuthenticated = {
+                        navController.navigate(Routes.Home) {
+                            popUpTo(Routes.Auth) { inclusive = true }
+                        }
+                    },
+                )
+            }
         }
         composable(Routes.Home) {
             HomeScreen(driverId, onOpen = { route -> navController.navigate(route) })

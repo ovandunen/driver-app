@@ -52,3 +52,11 @@
 - **Date:** 2026-10-26
 - **Decision:** MQTT-00 and D-01 through D-15 share one commit. The status file records that SHA on every row.
 - **Rationale:** Room, Hilt, navigation, and strings are shared. Splitting them after the fact would produce commits that do not build.
+
+## DEV_BYPASS_LOGIN build flag
+- **Date:** 2026-10-30
+- **Decision:** Added `BuildConfig.DEV_BYPASS_LOGIN` to skip AuthScreen in dev builds.
+- **Rationale:** Backend auth endpoints (B-04) not yet ready; need to iterate on HomeScreen, ride flow, payment UI without blocking on auth.
+- **Production safety:** Flag is hard-coded `false` in the `release` build type. It is impossible to ship a production APK with the bypass on.
+- **To re-enable login in dev:** set `DEV_BYPASS_LOGIN = false` in `defaultConfig`, sync Gradle, rebuild. Or temporarily set it via a debug-build-system property.
+- **To remove entirely (once backend is ready):** revert this commit; AuthScreen and AuthViewModel are unchanged.
