@@ -32,6 +32,9 @@ android {
         buildConfigField("String", "MQTT_PASSWORD", "\"$mqttPassword\"")
         buildConfigField("String", "MQTT_CERT_PIN", "\"$mqttPin\"")
         buildConfigField("Boolean", "USE_MOCK_API", useMock)
+        buildConfigField("boolean", "DEV_BYPASS_LOGIN", "true")
+        buildConfigField("String", "DEV_DRIVER_ID", "\"D-DEV-001\"")
+        buildConfigField("String", "DEV_DRIVER_NAME", "\"Dev Driver\"")
     }
 
     buildTypes {
@@ -40,6 +43,7 @@ android {
         }
         release {
             isMinifyEnabled = false
+            buildConfigField("boolean", "DEV_BYPASS_LOGIN", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",

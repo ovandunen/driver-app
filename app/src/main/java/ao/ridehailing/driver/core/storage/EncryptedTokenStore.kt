@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import ao.ridehailing.driver.BuildConfig
 
 class EncryptedTokenStore(
     context: Context,
@@ -15,6 +16,12 @@ class EncryptedTokenStore(
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
     )
+
+    init {
+        if (BuildConfig.DEV_BYPASS_LOGIN && token().isNullOrBlank()) {
+            save("dev-bypass-token", BuildConfig.DEV_DRIVER_ID, "2099-01-01T00:00:00Z")
+        }
+    }
 
     override fun save(token: String, driverId: String, expiresAt: String) {
         preferences.edit()
