@@ -9,6 +9,7 @@ import ao.ridehailing.driver.MemoryOnboardingApi
 import ao.ridehailing.driver.MemoryOnboardingDao
 import ao.ridehailing.driver.MemoryPayoutDao
 import ao.ridehailing.driver.MemoryPresence
+import ao.ridehailing.driver.MemoryLocation
 import ao.ridehailing.driver.MemoryPulse
 import ao.ridehailing.driver.MemoryReferralDao
 import ao.ridehailing.driver.MemoryRideDao
@@ -20,6 +21,8 @@ import ao.ridehailing.driver.MemoryUpload
 import ao.ridehailing.driver.core.money.AoaFormat
 import ao.ridehailing.driver.core.mqtt.CallTopics
 import ao.ridehailing.driver.core.mqtt.DriverTopics
+import ao.ridehailing.driver.core.mqtt.MqttMessage
+import ao.ridehailing.driver.core.mqtt.MqttMessageBus
 import ao.ridehailing.driver.core.mqtt.MqttQos
 import ao.ridehailing.driver.core.mqtt.TopicMapper
 import ao.ridehailing.driver.core.network.ApiErrorParser
@@ -54,6 +57,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
@@ -63,10 +67,13 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.time.Instant
 import java.time.LocalDate
 
-private fun offer(rideId: String) = """
-    {"type":"ride.offer","messageId":"m-$rideId","payload":{"rideId":"$rideId","pickup":{"lat":-8.8368,"lng":13.2343,"address":"Rua da Missão"},"destination":{"lat":-8.9175,"lng":13.1839,"address":"Talatona Shopping"},"distanceKm":14.3,"durationMin":34,"payoutAoa":13850,"passengerRating":4.9,"expiresAt":"2026-10-27T10:18:00Z"}}
+private val offerDeadline = Instant.parse("2026-10-27T10:18:00Z").toEpochMilli()
+
+private fun offer(rideId: String, type: String = "ride.offer") = """
+    {"type":"$type","messageId":"m-$rideId","payload":{"rideId":"$rideId","pickup":{"lat":-8.8368,"lng":13.2343,"address":"Rua da Missão"},"destination":{"lat":-8.9175,"lng":13.1839,"address":"Talatona Shopping"},"distanceKm":14.3,"durationMin":34,"payoutAoa":13850,"passengerRating":4.9,"expiresAt":"2026-10-27T10:18:00Z"}}
 """.trim()
 
 private fun rating(impact: Int, token: String) =
@@ -76,12 +83,14 @@ private fun rating(impact: Int, token: String) =
 class RideOfferViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val session = MemorySession()
+    private val bus = MqttMessageBus()
     private lateinit var viewModel: RideOfferViewModel
 
     @BeforeEach
     fun setUp() {
         Dispatchers.setMain(dispatcher)
-        viewModel = RideOfferViewModel(session, OfferParser(Moshi.Builder().build()))
+        viewModel = RideOfferViewModel(session, OfferParser(Moshi.Builder().build()), bus)
+        viewModel.useClock { offerDeadline - 15_000 }
     }
 
     @AfterEach
@@ -103,6 +112,17 @@ class RideOfferViewModelTest {
         assertEquals(OfferUi.Declined, viewModel.state.value)
         assertEquals(0, viewModel.ratingScore)
         assertTrue(session.events.any { it.startsWith("pub|${TopicMapper.rideDecline("R-1")}|${MqttQos.AT_LEAST_ONCE}") })
+    }
+
+    @Test
+    fun passengerHailOpensTheOffer() {
+        viewModel.onMessage(
+            """{"type":"ride.request","messageId":"R-100","payload":{"rideId":"R-100","passengerId":"P-DEV-001","paymentMethod":"CASH","fareAoa":4500,"pickup":{"lat":-8.8390,"lng":13.2894,"address":"A minha localização"},"destination":{"lat":-8.8147,"lng":13.2302,"address":"Trabalho"}}}""",
+        )
+        val showing = viewModel.state.value as OfferUi.Showing
+        assertEquals("R-100", showing.offer.rideId)
+        assertEquals("Trabalho", showing.offer.destinationAddress)
+        assertTrue(showing.seconds > 0)
     }
 
     @Test
@@ -136,21 +156,17 @@ class RideOfferViewModelTest {
     }
 
     @Test
-    fun threeDeclinesPauseForTwoMinutesThenReset() {
+    fun declinesStayEligibleWithoutPause() {
         viewModel.onMessage(offer("R-1"))
         viewModel.decline()
         viewModel.onMessage(offer("R-2"))
         viewModel.decline()
         viewModel.onMessage(offer("R-3"))
         viewModel.decline()
-        assertEquals(OfferUi.Paused(120), viewModel.state.value)
+        assertEquals(OfferUi.Declined, viewModel.state.value)
+        assertEquals(3, viewModel.consecutiveDeclines)
         viewModel.onMessage(offer("R-4"))
-        assertTrue(viewModel.state.value is OfferUi.Paused)
-        repeat(119) { viewModel.tick() }
-        assertEquals(OfferUi.Paused(1), viewModel.state.value)
-        viewModel.tick()
-        assertEquals(OfferUi.Idle, viewModel.state.value)
-        assertEquals(0, viewModel.consecutiveDeclines)
+        assertTrue(viewModel.state.value is OfferUi.Showing)
     }
 
     @Test
@@ -162,6 +178,70 @@ class RideOfferViewModelTest {
         viewModel.resume()
         viewModel.onMessage(offer("R-9"))
         assertTrue(viewModel.state.value is OfferUi.Showing)
+    }
+
+    @Test
+    fun validOfferFromBusIsShown() = runTest(dispatcher) {
+        viewModel.watch { true }
+        runCurrent()
+        bus.emit(MqttMessage(DriverTopics.rideOffers("D-DEV-001"), offer("R-OK"), MqttQos.AT_LEAST_ONCE))
+        runCurrent()
+        val showing = viewModel.state.value as OfferUi.Showing
+        assertEquals("R-OK", showing.offer.rideId)
+        assertEquals("Rua da Missão", showing.offer.pickupAddress)
+        assertEquals("Talatona Shopping", showing.offer.destinationAddress)
+        assertEquals(15, showing.seconds)
+        assertEquals(0, viewModel.ratingScore)
+    }
+
+    @Test
+    fun countdownUsesRemainingTimeUntilExpiry() {
+        viewModel.useClock { offerDeadline - 120_000 }
+        viewModel.onMessage(offer("R-LONG"), DriverTopics.rideOffers("D-DEV-001"))
+        assertEquals(120, (viewModel.state.value as OfferUi.Showing).seconds)
+    }
+
+    @Test
+    fun wrongTypeIsIgnored() {
+        viewModel.onMessage(offer("R-X", type = "ride.cancel"), DriverTopics.rideOffers("D-DEV-001"))
+        assertEquals(OfferUi.Idle, viewModel.state.value)
+        assertEquals(0, viewModel.ratingScore)
+    }
+
+    @Test
+    fun expiredOfferIsDroppedWithoutRatingOrDecline() = runTest(dispatcher) {
+        viewModel.useClock { offerDeadline }
+        viewModel.onMessage(offer("R-OLD"), DriverTopics.rideOffers("D-DEV-001"))
+        advanceUntilIdle()
+        assertEquals(OfferUi.Idle, viewModel.state.value)
+        assertEquals(0, viewModel.ratingScore)
+        assertEquals(0, viewModel.consecutiveDeclines)
+        assertTrue(session.events.none { it.contains("decline") || it.contains("accept") })
+    }
+
+    @Test
+    fun offlineDriverIgnoresOffer() = runTest(dispatcher) {
+        viewModel.watch { false }
+        runCurrent()
+        bus.emit(MqttMessage(DriverTopics.rideOffers("D-DEV-001"), offer("R-OFF"), MqttQos.AT_LEAST_ONCE))
+        runCurrent()
+        assertEquals(OfferUi.Idle, viewModel.state.value)
+        assertEquals(0, viewModel.ratingScore)
+        assertTrue(session.events.isEmpty())
+    }
+
+    @Test
+    fun declinePublishesDeclineTopicWithoutRating() = runTest(dispatcher) {
+        viewModel.onMessage(offer("R-D"))
+        val before = viewModel.ratingScore
+        viewModel.decline()
+        advanceUntilIdle()
+        assertEquals(OfferUi.Declined, viewModel.state.value)
+        assertEquals(before, viewModel.ratingScore)
+        val event = session.events.single { it.contains("/decline|") }
+        assertTrue(event.startsWith("pub|${TopicMapper.rideDecline("R-D")}|${MqttQos.AT_LEAST_ONCE}|"))
+        assertTrue(event.contains("\"type\":\"ride.decline\""))
+        assertTrue(event.contains("\"rideId\":\"R-D\""))
     }
 }
 
@@ -184,7 +264,7 @@ class HomeViewModelTest {
 
     @Test
     fun onlineSubscribesAndOfflineDisconnects() = runTest(dispatcher) {
-        val viewModel = HomeViewModel(MemoryStatusApi(), session, pulse, presence)
+        val viewModel = HomeViewModel(MemoryStatusApi(), session, pulse, MemoryLocation(), presence)
         viewModel.goOnline("D-1")
         advanceUntilIdle()
         assertEquals(HomeState.Online, viewModel.state.value)
@@ -202,7 +282,7 @@ class HomeViewModelTest {
 
     @Test
     fun statusFailureStaysInError() = runTest(dispatcher) {
-        val viewModel = HomeViewModel(FailingStatusApi(), session, pulse, presence)
+        val viewModel = HomeViewModel(FailingStatusApi(), session, pulse, MemoryLocation(), presence)
         viewModel.goOnline("D-1")
         advanceUntilIdle()
         assertEquals(HomeState.Error("offline"), viewModel.state.value)
@@ -348,12 +428,12 @@ class ChatAndCallTest {
         advanceUntilIdle()
         assertEquals(CallStage.Initiating, viewModel.stage.value)
         viewModel.onResponse(
-            """{"type":"call.response","payload":{"callId":"c-1","signallingUrl":"wss://api.example.ao/v1/calls/c-1/signal","proxyNumber":"+244900000"}}""",
+            """{"type":"call.response","payload":{"callId":"c-1","signallingUrl":"ride/R-1/call/signal","proxyNumber":"+244900000"}}""",
         )
         advanceUntilIdle()
         assertEquals(CallStage.Ringing, viewModel.stage.value)
-        assertEquals("wss://api.example.ao/v1/calls/c-1/signal", signal.url)
-        assertEquals("+244900000", viewModel.proxyNumber)
+        assertEquals("ride/R-1/call/signal", signal.url)
+        assertFalse(signal.url.contains("244"))
         viewModel.connected()
         viewModel.mute()
         viewModel.shareLocation()
@@ -439,6 +519,10 @@ class EarningsWalletSafetyTest {
         assertEquals(25, viewModel.cancellationRate)
         assertEquals("Kz 13.850,00", AoaFormat.format(13_850))
         assertEquals("-Kz 2.000,00", AoaFormat.format(-2_000))
+        assertEquals(2_258L, AoaFormat.commissionOf(15_050))
+        assertEquals(12_792L, AoaFormat.netOf(15_050))
+        assertEquals("15.050 − 2.258 = 12.792", AoaFormat.split(15_050))
+        assertEquals("12.792", AoaFormat.grouped(12_792))
     }
 
     @Test

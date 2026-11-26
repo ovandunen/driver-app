@@ -3,8 +3,10 @@ package ao.ridehailing.driver.core.mqtt
 import com.hivemq.client.mqtt.MqttClient
 import com.hivemq.client.mqtt.datatypes.MqttQos
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class HiveMqttGateway : MqttGateway {
@@ -13,7 +15,7 @@ class HiveMqttGateway : MqttGateway {
     private var willTopic = ""
     private var willBody = ""
 
-    override suspend fun connect(config: MqttConfig) {
+    override suspend fun connect(config: MqttConfig) = withContext(Dispatchers.IO) {
         val built = MqttClient.builder()
             .useMqttVersion5()
             .identifier(config.clientId)
@@ -41,34 +43,61 @@ class HiveMqttGateway : MqttGateway {
         client = next
     }
 
-    override suspend fun disconnect() {
+    override suspend fun disconnect() = withContext(Dispatchers.IO) {
         client?.disconnect()?.get(15, TimeUnit.SECONDS)
         client = null
     }
 
     override suspend fun subscribe(topic: String, qos: Int) {
-        client().subscribeWith()
-            .topicFilter(topic)
-            .qos(qosOf(qos))
-            .callback { publish ->
-                val text = String(publish.payloadAsBytes, Charsets.UTF_8)
-                incoming.tryEmit(MqttMessage(publish.topic.toString(), text, qos))
+        val current = client ?: return
+        withContext(Dispatchers.IO) {
+            try {
+                current.subscribeWith()
+                    .topicFilter(topic)
+                    .qos(qosOf(qos))
+                    .callback { publish ->
+                        val text = String(publish.payloadAsBytes, Charsets.UTF_8)
+                        incoming.tryEmit(MqttMessage(publish.topic.toString(), text, qos))
+                    }
+                    .send()
+                    .get(15, TimeUnit.SECONDS)
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (failed: Exception) {
+                android.util.Log.w("driver-mqtt", "subscribe $topic failed: ${failed.message}")
             }
-            .send()
-            .get(15, TimeUnit.SECONDS)
+        }
     }
 
     override suspend fun unsubscribe(topic: String) {
-        client().unsubscribeWith().topicFilter(topic).send().get(15, TimeUnit.SECONDS)
+        val current = client ?: return
+        withContext(Dispatchers.IO) {
+            try {
+                current.unsubscribeWith().topicFilter(topic).send().get(15, TimeUnit.SECONDS)
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (failed: Exception) {
+                android.util.Log.w("driver-mqtt", "unsubscribe $topic failed: ${failed.message}")
+            }
+        }
     }
 
     override suspend fun publish(topic: String, body: String, qos: Int) {
-        client().publishWith()
-            .topic(topic)
-            .payload(body.toByteArray(Charsets.UTF_8))
-            .qos(qosOf(qos))
-            .send()
-            .get(15, TimeUnit.SECONDS)
+        val current = client ?: return
+        withContext(Dispatchers.IO) {
+            try {
+                current.publishWith()
+                    .topic(topic)
+                    .payload(body.toByteArray(Charsets.UTF_8))
+                    .qos(qosOf(qos))
+                    .send()
+                    .get(15, TimeUnit.SECONDS)
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (failed: Exception) {
+                android.util.Log.w("driver-mqtt", "publish $topic failed: ${failed.message}")
+            }
+        }
     }
 
     override fun incoming(): Flow<MqttMessage> = incoming
@@ -78,7 +107,6 @@ class HiveMqttGateway : MqttGateway {
         willBody = body
     }
 
-    private fun client(): Mqtt5AsyncClient = client ?: error("mqtt not connected")
 }
 
 private fun qosOf(qos: Int): MqttQos = if (qos == 0) MqttQos.AT_MOST_ONCE else MqttQos.AT_LEAST_ONCE

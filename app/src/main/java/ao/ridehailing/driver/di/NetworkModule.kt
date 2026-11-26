@@ -43,7 +43,7 @@ object NetworkModule {
     fun apiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
 
     private fun baseUrl(): String {
-        val raw = BuildConfig.BASE_URL
+        val raw = BuildConfig.BACKEND_BASE_URL
         return if (raw.endsWith("/")) raw else "$raw/"
     }
 }

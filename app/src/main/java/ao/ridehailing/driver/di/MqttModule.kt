@@ -1,7 +1,9 @@
 package ao.ridehailing.driver.di
 
+import ao.ridehailing.driver.BuildConfig
 import ao.ridehailing.driver.core.mqtt.HiveMqttGateway
 import ao.ridehailing.driver.core.mqtt.MqttConnectionManager
+import ao.ridehailing.driver.core.mqtt.MqttEndpointStore
 import ao.ridehailing.driver.core.mqtt.MqttGateway
 import ao.ridehailing.driver.core.mqtt.MqttMessageBus
 import dagger.Module
@@ -35,5 +37,14 @@ object MqttModule {
         gateway: MqttGateway,
         bus: MqttMessageBus,
         @AppScope scope: CoroutineScope,
-    ): MqttConnectionManager = MqttConnectionManager(gateway, bus, scope)
+        endpoints: MqttEndpointStore,
+    ): MqttConnectionManager = MqttConnectionManager(
+        gateway,
+        bus,
+        scope,
+        brokerHost = { endpoints.current()?.host.orEmpty() },
+        brokerPort = { endpoints.current()?.port ?: 0 },
+        username = BuildConfig.MQTT_USERNAME,
+        password = BuildConfig.MQTT_PASSWORD,
+    )
 }

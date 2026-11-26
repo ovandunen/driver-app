@@ -4,8 +4,10 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -43,6 +45,10 @@ class AndroidPresence @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : PresenceControl {
     override fun start() {
+        val allowed = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (allowed != PackageManager.PERMISSION_GRANTED) {
+            throw SecurityException("Location permission is required to go online.")
+        }
         ContextCompat.startForegroundService(context, Intent(context, DriverOnlineService::class.java))
     }
 

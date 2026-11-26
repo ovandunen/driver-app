@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,14 @@ plugins {
     alias(libs.plugins.hilt)
     jacoco
 }
+
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.reader(Charsets.UTF_8)?.use { load(it) }
+}
+val mapTilerKey: String = localProperties.getProperty("maptiler.api_key") ?: ""
+
+fun String.escapeForBuildConfig(): String =
+    replace("\\", "\\\\").replace("\"", "\\\"")
 
 android {
     namespace = "ao.ridehailing.driver"
@@ -18,23 +28,26 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "MAPTILER_API_KEY", "\"${mapTilerKey.escapeForBuildConfig()}\"")
         val baseUrl = providers.gradleProperty("BASE_URL").get()
         val backendUrl = providers.gradleProperty("BACKEND_BASE_URL").get()
-        val mqttUrl = providers.gradleProperty("MQTT_URL").get()
         val mqttUser = providers.gradleProperty("MQTT_USERNAME").get()
         val mqttPassword = providers.gradleProperty("MQTT_PASSWORD").get()
         val mqttPin = providers.gradleProperty("MQTT_CERT_PIN").get()
         val useMock = providers.gradleProperty("USE_MOCK_API").get()
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
         buildConfigField("String", "BACKEND_BASE_URL", "\"$backendUrl\"")
-        buildConfigField("String", "MQTT_URL", "\"$mqttUrl\"")
         buildConfigField("String", "MQTT_USERNAME", "\"$mqttUser\"")
         buildConfigField("String", "MQTT_PASSWORD", "\"$mqttPassword\"")
         buildConfigField("String", "MQTT_CERT_PIN", "\"$mqttPin\"")
         buildConfigField("Boolean", "USE_MOCK_API", useMock)
         buildConfigField("boolean", "DEV_BYPASS_LOGIN", "true")
+        // false: app opens on Home. true: AuthScreen (phone + OTP) is the start destination again.
+        buildConfigField("boolean", "LOGIN_UI_ENABLED", "false")
         buildConfigField("String", "DEV_DRIVER_ID", "\"D-DEV-001\"")
         buildConfigField("String", "DEV_DRIVER_NAME", "\"Dev Driver\"")
+        buildConfigField("String", "DEV_VEHICLE_MAKE", "\"Dev Car\"")
+        buildConfigField("String", "DEV_DRIVER_PLATE", "\"LD-0000-XX\"")
     }
 
     buildTypes {
@@ -138,6 +151,8 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.webrtc)
     implementation(libs.hivemq)
+    implementation(libs.play.services.location)
+    implementation(libs.maplibre)
 
     testImplementation(libs.json)
 

@@ -12,6 +12,11 @@
 - **Proposed workaround:** `MqttConnectionManagerTest` drives a fake gateway for connect, retry, will, and message forwarding.
 - **Status:** Unit coverage stands in for the Docker round trip.
 
+## MQTT-00 — broker address
+- **Date:** 2026-11-18
+- **Issue:** The broker host and port are not in the APK. The MQTT client stays disconnected until `adb shell am start -n ao.ridehailing.driver/.MainActivity -e mqtt_host "<ipv4>" -e mqtt_port "1883"` has been run once on that device.
+- **Status:** The extras are stored and reused. Going online after that command uses the saved broker.
+
 ## MQTT-00 — certificate pin
 - **Date:** 2026-10-26
 - **Issue:** `MQTT_CERT_PIN` is empty. HiveMQ is connected with the platform TLS trust store via `sslWithDefaultConfig()`.

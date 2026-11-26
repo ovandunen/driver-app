@@ -15,6 +15,10 @@ object DriverTopics {
     fun demandZones(driverId: String) = "driver/$driverId/demand-zones"
     fun rideOffers(driverId: String) = "driver/$driverId/ride-offers"
     fun driverLocation(driverId: String) = "driver/$driverId/location"
+
+    fun cityDrivers() = "city/luanda/drivers"
+
+    fun cityRideRequests() = "city/luanda/ride-requests"
     fun passengerRideStatus(passengerId: String) = "passenger/$passengerId/ride-status"
     fun systemHealth() = "system/health"
     fun rideCancel(rideId: String) = "ride/$rideId/cancel"

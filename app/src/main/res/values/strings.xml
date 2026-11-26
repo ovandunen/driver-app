@@ -27,6 +27,8 @@
     <string name="nav_call">Chamada</string>
     <string name="nav_chat">Mensagens</string>
     <string name="call_encrypted_label">🔒 Chamada Encriptada</string>
+    <string name="no_show_too_far">Está demasiado longe do local de embarque. O não-comparecimento não foi registado.</string>
+    <string name="cancel_strike_warning">Esta anulação conta como uma falta.</string>
     <string name="call_status_connected">Passageiro · Corrida em curso</string>
     <string name="call_action_mute">🔇</string>
     <string name="call_action_end">📞</string>
@@ -96,4 +98,15 @@
     <string name="cancel_changed_mind">Passageiro desistiu</string>
     <string name="cancel_other">Outro</string>
     <string name="heatmap_suggestion">Zona com muita procura</string>
+    <string name="home_offline_hint">Ative o interruptor acima para começar a receber pedidos de corrida</string>
+    <string name="home_today_label">GANHOS DE HOJE</string>
+    <string name="home_stat_line">%1$d corridas · %2$s online</string>
+    <string name="home_goal_label">Meta diária: %1$s</string>
+    <string name="home_map_label">Mapa em tempo real</string>
+    <string name="nav_home">Início</string>
+    <string name="nav_trips">Viagens</string>
+    <string name="trips_empty_title">Sem viagens</string>
+    <string name="trips_empty_body">As corridas concluídas aparecem aqui.</string>
+    <string name="profile_vehicle">Veículo</string>
+    <string name="profile_preferences">Preferências</string>
 </resources>

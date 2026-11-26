@@ -23,7 +23,7 @@ class IntervalPulse @Inject constructor(
         job?.cancel()
         job = scope.launch {
             while (true) {
-                delay(5_000)
+                delay(4_000)
                 block()
             }
         }

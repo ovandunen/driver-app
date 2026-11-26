@@ -13,7 +13,6 @@ import ao.ridehailing.driver.R
 @Composable
 fun CallScreen(
     stage: CallStage,
-    proxyNumber: String,
     onMute: () -> Unit,
     onEnd: () -> Unit,
     onShare: () -> Unit,
@@ -22,7 +21,6 @@ fun CallScreen(
         Text(stringResource(R.string.call_encrypted_label))
         Text(stringResource(R.string.call_status_connected))
         Text(stage.name)
-        Text(proxyNumber)
         Button(onClick = onMute) { Text(stringResource(R.string.call_action_mute)) }
         Button(onClick = onEnd) { Text(stringResource(R.string.call_action_end)) }
         Button(onClick = onShare) { Text(stringResource(R.string.call_action_location)) }

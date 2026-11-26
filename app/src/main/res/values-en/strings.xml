@@ -27,6 +27,8 @@
     <string name="nav_call">Call</string>
     <string name="nav_chat">Messages</string>
     <string name="call_encrypted_label">🔒 Encrypted call</string>
+    <string name="no_show_too_far">You are too far from the pickup. The no-show was not recorded.</string>
+    <string name="cancel_strike_warning">This cancellation counts as a strike.</string>
     <string name="call_status_connected">Passenger · Ride in progress</string>
     <string name="call_action_mute">🔇</string>
     <string name="call_action_end">📞</string>
@@ -96,4 +98,15 @@
     <string name="cancel_changed_mind">Passenger changed mind</string>
     <string name="cancel_other">Other</string>
     <string name="heatmap_suggestion">High demand zone</string>
+    <string name="home_offline_hint">Turn the switch on to start receiving ride requests</string>
+    <string name="home_today_label">TODAY\'S EARNINGS</string>
+    <string name="home_stat_line">%1$d trips · %2$s online</string>
+    <string name="home_goal_label">Daily goal: %1$s</string>
+    <string name="home_map_label">Live map</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_trips">Trips</string>
+    <string name="trips_empty_title">No trips</string>
+    <string name="trips_empty_body">Finished rides show up here.</string>
+    <string name="profile_vehicle">Vehicle</string>
+    <string name="profile_preferences">Preferences</string>
 </resources>

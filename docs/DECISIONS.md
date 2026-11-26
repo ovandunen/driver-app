@@ -1,5 +1,10 @@
 # Engineering Decisions Log
 
+## MQTT broker address from the launch intent
+- **Date:** 2026-11-18
+- **Decision:** Host and port are not build config. `adb shell am start -n ao.ridehailing.driver/.MainActivity -e mqtt_host "192.168.1.10" -e mqtt_port "1883"` stores a dotted IPv4 address and a port from 1 to 65535. The driver connects with those values the next time it goes online. The socket is plain TCP.
+- **Rationale:** The same extras configure the passenger app. A shared broker address cannot be compiled into either APK.
+
 ## MQTT library choice — HiveMQ vs Eclipse Paho
 - **Date:** 2026-10-26
 - **Decision:** HiveMQ MQTT Client `com.hivemq:hivemq-mqtt-client:1.3.3`
@@ -55,8 +60,16 @@
 
 ## DEV_BYPASS_LOGIN build flag
 - **Date:** 2026-10-30
-- **Decision:** Added `BuildConfig.DEV_BYPASS_LOGIN` to skip AuthScreen in dev builds.
-- **Rationale:** Backend auth endpoints (B-04) not yet ready; need to iterate on HomeScreen, ride flow, payment UI without blocking on auth.
-- **Production safety:** Flag is hard-coded `false` in the `release` build type. It is impossible to ship a production APK with the bypass on.
-- **To re-enable login in dev:** set `DEV_BYPASS_LOGIN = false` in `defaultConfig`, sync Gradle, rebuild. Or temporarily set it via a debug-build-system property.
-- **To remove entirely (once backend is ready):** revert this commit; AuthScreen and AuthViewModel are unchanged.
+- **Decision:** Added `BuildConfig.DEV_BYPASS_LOGIN` to keep a silent device token in debug builds.
+- **Rationale:** Backend auth endpoints (B-04) not yet ready.
+- **Production safety:** Flag is hard-coded `false` in the `release` build type.
+
+## LOGIN_UI_ENABLED
+- **Date:** 2026-10-31
+- **Decision:** `BuildConfig.LOGIN_UI_ENABLED` is `false` in `defaultConfig` (debug and release). The app opens on Home. AuthScreen, AuthViewModel, and the OTP flow stay in the project.
+- **To restore login:** set `LOGIN_UI_ENABLED` to `true` in `app/build.gradle.kts` `defaultConfig`, then rebuild. AuthScreen is the start destination again.
+- **Invalid token:** when the flag is false and there is no token (release, without the debug bypass), the only screen is "Reativar conta" with one button. That is not the login form.
+
+## Auto-pause removed
+- **Date:** 2026-10-31
+- **Decision:** Wireframe v3 is the visual source of truth. A decline is one tap, with no confirmation and no 2-minute pause. The driver stays eligible. There is no D-15 overlay.

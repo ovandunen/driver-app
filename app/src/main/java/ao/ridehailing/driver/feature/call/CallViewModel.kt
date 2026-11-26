@@ -27,13 +27,14 @@ interface AudioCall {
     fun mute(on: Boolean)
     fun shareLocation(on: Boolean)
     fun stop()
+    fun hear(json: String): Boolean = false
 }
 
 @JsonClass(generateAdapter = true)
 data class CallResponseEnvelope(val type: String, val payload: CallResponsePayload)
 
 @JsonClass(generateAdapter = true)
-data class CallResponsePayload(val callId: String, val signallingUrl: String, val proxyNumber: String)
+data class CallResponsePayload(val callId: String, val signallingUrl: String)
 
 @HiltViewModel
 class CallViewModel @Inject constructor(
@@ -48,8 +49,6 @@ class CallViewModel @Inject constructor(
         private set
     var sharing: Boolean = false
         private set
-    var proxyNumber: String = ""
-        private set
     private var rideId: String = ""
 
     fun start(id: String, messageId: String) {
@@ -61,12 +60,15 @@ class CallViewModel @Inject constructor(
     }
 
     fun onResponse(json: String) {
+        if (json.contains("\"sdpType\"")) {
+            if (audio.hear(json)) connected()
+            return
+        }
         val envelope = try {
             moshi.adapter(CallResponseEnvelope::class.java).fromJson(json)
         } catch (_: Exception) {
             null
         } ?: return fail()
-        proxyNumber = envelope.payload.proxyNumber
         stages.value = CallStage.Ringing
         viewModelScope.launch { signalling.open(envelope.payload.signallingUrl) }
     }

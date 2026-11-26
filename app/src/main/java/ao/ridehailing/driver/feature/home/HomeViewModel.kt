@@ -3,6 +3,8 @@ package ao.ridehailing.driver.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ao.ridehailing.driver.core.location.LocationPulse
+import ao.ridehailing.driver.core.location.LocationSource
+import ao.ridehailing.driver.core.location.driverLocationBody
 import ao.ridehailing.driver.core.mqtt.DriverStatusBody
 import ao.ridehailing.driver.core.mqtt.DriverTopics
 import ao.ridehailing.driver.core.mqtt.MqttQos
@@ -34,6 +36,7 @@ class HomeViewModel @Inject constructor(
     private val api: DriverStatusApi,
     private val session: OnlineSession,
     private val pulse: LocationPulse,
+    private val locations: LocationSource,
     private val presence: PresenceControl,
 ) : ViewModel() {
     private val states = MutableStateFlow<HomeState>(HomeState.Offline)
@@ -43,33 +46,48 @@ class HomeViewModel @Inject constructor(
         if (states.value is HomeState.GoingOnline || states.value is HomeState.Online) return
         states.value = HomeState.GoingOnline
         viewModelScope.launch {
-            when (val result = api.setStatus("online")) {
-                is NetworkResult.Failure -> states.value = HomeState.Error(result.message)
-                is NetworkResult.Success -> enterOnline(driverId)
+            try {
+                when (val result = api.setStatus("online")) {
+                    is NetworkResult.Failure -> states.value = HomeState.Error(result.message)
+                    is NetworkResult.Success -> enterOnline(driverId)
+                }
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                states.value = HomeState.Error(error.message ?: "offline")
             }
         }
     }
 
     fun goOffline(driverId: String) {
         viewModelScope.launch {
-            session.unsubscribe(DriverTopics.rideOffers(driverId))
-            session.unsubscribe(DriverTopics.demandZones(driverId))
-            session.publish(TopicMapper.driverStatus(driverId), DriverStatusBody.offline(), MqttQos.AT_LEAST_ONCE)
-            pulse.stop()
-            presence.stop()
-            session.disconnectSession()
-            api.setStatus("offline")
+            try {
+                session.unsubscribe(DriverTopics.rideOffers(driverId))
+                session.unsubscribe(DriverTopics.demandZones(driverId))
+                session.publish(TopicMapper.driverStatus(driverId), DriverStatusBody.offline(), MqttQos.AT_LEAST_ONCE)
+                pulse.stop()
+                locations.stop()
+                presence.stop()
+                session.disconnectSession()
+                api.setStatus("offline")
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+            }
             states.value = HomeState.Offline
         }
     }
 
     private suspend fun enterOnline(driverId: String) {
+        session.connect(driverId)
         presence.start()
         session.subscribe(DriverTopics.rideOffers(driverId), MqttQos.AT_LEAST_ONCE)
         session.subscribe(DriverTopics.demandZones(driverId), MqttQos.AT_MOST_ONCE)
         session.publish(TopicMapper.driverStatus(driverId), DriverStatusBody.online(), MqttQos.AT_LEAST_ONCE)
+        locations.start()
         pulse.start {
-            session.publish(DriverTopics.driverLocation(driverId), """{"type":"driver.location","payload":{"lat":0,"lng":0}}""", MqttQos.AT_MOST_ONCE)
+            val body = driverLocationBody(locations, gpsAllowed = true) ?: return@start
+            session.publish(DriverTopics.driverLocation(driverId), body, MqttQos.AT_MOST_ONCE)
         }
         states.value = HomeState.Online
     }

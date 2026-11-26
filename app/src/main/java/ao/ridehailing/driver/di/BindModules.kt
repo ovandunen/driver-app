@@ -1,7 +1,9 @@
 package ao.ridehailing.driver.di
 
+import ao.ridehailing.driver.core.location.ActiveLocationSource
 import ao.ridehailing.driver.core.location.IntervalPulse
 import ao.ridehailing.driver.core.location.LocationPulse
+import ao.ridehailing.driver.core.location.LocationSource
 import ao.ridehailing.driver.core.mqtt.MqttConnectionManager
 import ao.ridehailing.driver.core.mqtt.OnlineSession
 import ao.ridehailing.driver.core.network.ChatUploadApi
@@ -52,6 +54,7 @@ abstract class StatusBindModule {
 @InstallIn(SingletonComponent::class)
 abstract class RuntimeBindModule {
     @Binds @Singleton abstract fun pulse(impl: IntervalPulse): LocationPulse
+    @Binds @Singleton abstract fun locations(impl: ActiveLocationSource): LocationSource
     @Binds @Singleton abstract fun presence(impl: AndroidPresence): PresenceControl
     @Binds @Singleton abstract fun schedule(impl: WorkOnboardingSchedule): OnboardingSchedule
     @Binds @Singleton abstract fun signalling(impl: WebSocketSignalling): SignallingClient

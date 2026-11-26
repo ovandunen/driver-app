@@ -75,7 +75,8 @@ class ActiveRideViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            val body = RideCommands.cancel(reason, text, now, "$rideId-$now")
+            val wire = if (stages.value == RideStage.EnRouteToPickup) "en_route_to_pickup" else "at_pickup"
+            val body = RideCommands.cancel(reason, text, now, "$rideId-$now", driverId, wire)
             session.publish(DriverTopics.rideCancel(rideId), body, MqttQos.AT_LEAST_ONCE)
             session.publish(TopicMapper.rideState(rideId), body, MqttQos.AT_LEAST_ONCE)
             message = null
@@ -96,7 +97,7 @@ class ActiveRideViewModel @Inject constructor(
             events.insert(RideEventEntity(rideId = rideId, state = wire, timestamp = now))
             session.publish(
                 TopicMapper.rideState(rideId),
-                RideCommands.state(wire, now, driverId, "$rideId-$wire"),
+                RideCommands.state(wire, now, driverId, "$rideId-$wire", rideId),
                 MqttQos.AT_LEAST_ONCE,
             )
         }

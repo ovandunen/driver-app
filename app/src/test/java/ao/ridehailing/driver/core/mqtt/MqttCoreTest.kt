@@ -12,6 +12,22 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
+class MqttExtrasTest {
+    @Test
+    fun acceptsDottedIpv4AndPort() {
+        val endpoint = MqttExtras.parse("10.0.2.2", "1883")
+        assertEquals("10.0.2.2", endpoint?.host)
+        assertEquals(1883, endpoint?.port)
+    }
+
+    @Test
+    fun rejectsHostnamesAndBadPorts() {
+        assertEquals(null, MqttExtras.parse("broker.local", "1883"))
+        assertEquals(null, MqttExtras.parse("10.0.2.2", "0"))
+        assertEquals(null, MqttExtras.parse("10.0.2", "1883"))
+    }
+}
+
 class TopicMapperTest {
     @Test
     fun taxonomy() {

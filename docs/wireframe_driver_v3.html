@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>App do Motorista — Wireframe v3</title>
+<style>
+  :root {
+    --ink: #0A0A0A;
+    --paper: #FFFFFF;
+    --page: #D5DEE4;
+    --teal: #1B6B7A;
+    --btn: #134F5A;
+    --sos: #7F1D1D;
+    --line: #C5D3D8;
+    --dark: #0E171B;
+    --dark-card: #152226;
+    --night: #F7FBFC;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.4;
+    padding: 32px 16px 80px;
+  }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; text-align: center; }
+  h2 { font-size: 22px; margin: 48px auto 8px; max-width: 960px; }
+  h3 { font-size: 16px; margin: 0 0 4px; }
+  p { margin: 0 0 8px; }
+  a { color: var(--ink); }
+  .wrap { max-width: 960px; margin: 0 auto 16px; }
+  .lead { text-align: center; max-width: 720px; margin: 0 auto 8px; }
+  .path {
+    max-width: 960px;
+    margin: 16px auto 8px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-weight: 700;
+  }
+  .screens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 36px 28px;
+    justify-content: center;
+    max-width: 1400px;
+    margin: 20px auto;
+  }
+  .screen-card { width: 320px; }
+  .desc { min-height: 3.2em; }
+  .note {
+    margin-top: 10px;
+    background: #FFF8E8;
+    border-left: 4px solid var(--ink);
+    padding: 8px 10px;
+  }
+  .removed {
+    margin-top: 10px;
+    background: var(--paper);
+    border: 2px dashed var(--sos);
+    color: var(--sos);
+    font-weight: 800;
+    padding: 8px 10px;
+  }
+
+  .phone, .phone * { font-size: 16px; line-height: 1.25; }
+  .phone {
+    width: 320px;
+    height: 640px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 28px rgba(10, 10, 10, 0.18);
+  }
+  .phone::before {
+    content: "";
+    position: absolute;
+    top: 8px; left: 50%;
+    transform: translateX(-50%);
+    width: 92px; height: 6px;
+    background: var(--ink);
+    border-radius: 4px;
+    z-index: 6;
+  }
+  .status {
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 14px 6px;
+    font-weight: 800;
+  }
+  .status span { display: inline-flex; align-items: center; gap: 6px; }
+  .body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .map {
+    flex: 1;
+    min-height: 80px;
+    position: relative;
+    background-color: #E4EEF1;
+    background-image:
+      linear-gradient(#C5D5DB 1px, transparent 1px),
+      linear-gradient(90deg, #C5D5DB 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .you, .heat {
+    position: absolute;
+    font-weight: 800;
+  }
+  .you {
+    top: 46%; left: 42%;
+    background: var(--btn);
+    color: #fff;
+    border: 3px solid #fff;
+    border-radius: 999px;
+    padding: 4px 8px;
+  }
+  .phone .you { color: #fff; }
+  .heat {
+    width: 118px; height: 78px;
+    border-radius: 40px;
+    background: rgba(154, 52, 18, 0.16);
+    border: 2px solid #9A3412;
+  }
+  .heat b {
+    position: absolute;
+    left: 8px; bottom: 8px;
+    background: #fff;
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 2px 6px;
+    white-space: nowrap;
+  }
+  .dock {
+    margin-top: auto;
+    background: var(--paper);
+    padding: 8px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 8px 10px;
+  }
+  .pad { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .center { text-align: center; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .n32 { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .n40 { font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .n48 { font-size: 48px; font-weight: 800; letter-spacing: -0.04em; line-height: 0.95; }
+  .t16 { font-weight: 700; }
+  .muted { font-weight: 500; }
+  .eq {
+    font-weight: 800;
+    text-align: center;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 8px 6px;
+    white-space: nowrap;
+  }
+  .goal { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; margin: 6px 0; }
+  .goal span { display: block; height: 100%; background: var(--btn); }
+  .earn, .quiet, .btn, .ibtn, .sos, .listbtn {
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .earn {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font-weight: 800;
+  }
+  .btn {
+    height: 72px;
+    width: 100%;
+    border: 0;
+    border-radius: 16px;
+    background: var(--btn);
+    color: #fff;
+    font-size: 32px;
+    font-weight: 800;
+  }
+  .phone .btn { color: #fff; font-size: 32px; }
+  .btn.long { font-size: 22px; }
+  .phone .btn.long { font-size: 22px; }
+  .btn.giant { height: 88px; }
+  .btn.off {
+    background: #fff;
+    color: var(--ink);
+    border: 3px solid var(--ink);
+  }
+  .phone .btn.off, .phone .btn.off * { color: var(--ink); background: transparent; }
+  .phone .btn.off { background: #fff; }
+  .quiet {
+    height: 44px;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    color: var(--ink);
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .quiet.small {
+    width: auto;
+    align-self: center;
+    padding: 0 16px;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    text-decoration: none;
+    background: #fff;
+  }
+  .quiet.slim { height: 36px; }
+  .icons { display: flex; gap: 8px; }
+  .ibtn {
+    flex: 1;
+    height: 64px;
+    background: #fff;
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    font-weight: 800;
+  }
+  .banner, .pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--ink);
+    padding: 8px 10px;
+  }
+  .handle {
+    width: 48px; height: 6px;
+    background: var(--ink);
+    border-radius: 4px;
+    margin: 0 auto 4px;
+  }
+  .ring {
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: conic-gradient(var(--btn) 0deg 288deg, var(--line) 288deg 360deg);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .ring i {
+    width: 66px; height: 66px;
+    border-radius: 50%;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    font-style: normal;
+    font-size: 32px;
+    font-weight: 800;
+  }
+  .phone .ring i { font-size: 32px; }
+  .headrow { display: flex; align-items: center; gap: 12px; padding: 8px 12px 0; }
+  .facts { display: flex; flex-direction: column; gap: 6px; padding: 0 12px; }
+  .fact { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .sos {
+    position: absolute;
+    top: 8px; right: 10px;
+    z-index: 4;
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    border: 3px solid #fff;
+    background: var(--sos);
+    color: #fff;
+    font-weight: 800;
+    line-height: 1.05;
+  }
+  .phone .sos { color: #fff; font-size: 16px; }
+  .timer { font-size: 48px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; text-align: center; }
+  .phone .timer { font-size: 48px; }
+  .listbtn {
+    width: 100%;
+    min-height: 64px;
+    text-align: left;
+    background: #fff;
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-weight: 800;
+  }
+  .chart {
+    height: 110px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 0 4px;
+  }
+  .bar {
+    flex: 1;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 6px 6px 0 0;
+  }
+  .bar.hoje { background: var(--btn); border-color: var(--ink); border-width: 3px; }
+  .chart-labels { display: flex; justify-content: space-between; gap: 4px; }
+  .chart-labels span { flex: 1; text-align: center; font-weight: 800; }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.72);
+    display: flex;
+    align-items: flex-end;
+    z-index: 5;
+  }
+  .overlay .sheet {
+    background: #fff;
+    color: var(--ink);
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding: 16px 12px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .phone .overlay .sheet, .phone .overlay .sheet * { color: var(--ink); }
+  .stars {
+    width: 100%;
+    min-height: 64px;
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 800;
+  }
+  .star { color: var(--btn); letter-spacing: 2px; font-size: 28px; line-height: 1; }
+  .phone .star { font-size: 28px; color: var(--btn); }
+  .ico { width: 22px; height: 22px; display: block; flex-shrink: 0; }
+  .ref { font-size: 32px; font-weight: 800; letter-spacing: 0.04em; text-align: center; }
+  .phone .ref { font-size: 32px; }
+  .tabs { display: flex; gap: 6px; }
+  .tab {
+    flex: 1;
+    text-align: center;
+    font-weight: 800;
+    padding: 8px 0;
+    border-bottom: 3px solid transparent;
+  }
+  .tab.on { border-bottom-color: var(--ink); }
+
+  .phone.dark { background: var(--dark); color: var(--night); border-color: #000; }
+  .phone.dark::before { background: var(--night); }
+  .phone.dark, .phone.dark * { color: var(--night); }
+  .phone.dark .status, .phone.dark .body, .phone.dark .dock, .phone.dark .card { background: var(--dark); }
+  .phone.dark .card { background: var(--dark-card); }
+  .phone.dark .map {
+    background-color: #12262C;
+    background-image:
+      linear-gradient(#1C3940 1px, transparent 1px),
+      linear-gradient(90deg, #1C3940 1px, transparent 1px);
+  }
+  .phone.dark .btn { background: var(--btn); color: #fff; }
+  .phone.dark .btn * { color: #fff; }
+  .phone.dark .ring i { background: var(--dark); }
+  .phone.dark .eq, .phone.dark .quiet.small, .phone.dark .ibtn, .phone.dark .listbtn, .phone.dark .banner, .phone.dark .pill {
+    border-color: var(--night);
+    background: var(--dark-card);
+    color: var(--night);
+  }
+  .phone.dark .goal { background: #24383E; }
+  .phone.dark .heat b, .phone.dark .you { color: #fff; }
+  .phone.dark .heat b { color: var(--ink); background: #fff; }
+  .phone.dark .bar { background: var(--dark-card); border-color: var(--night); }
+  .phone.dark .bar.hoje { background: var(--btn); }
+
+  .section-off {
+    max-width: 1400px;
+    margin: 24px auto;
+    padding: 16px;
+    border: 3px dashed #4B5563;
+    background: #E5E7EB;
+  }
+  .section-off .phone { filter: grayscale(1); opacity: 0.55; }
+  .stamp {
+    display: inline-block;
+    background: #374151;
+    color: #fff;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  table { width: 100%; border-collapse: collapse; background: var(--paper); margin: 12px 0 8px; }
+  th, td { border: 2px solid var(--ink); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #E7F0F2; }
+  .score { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .blocks {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 12px 16px;
+  }
+</style>
+</head>
+<body>
+
+<h1>App do Motorista — Wireframe v3</h1>
+<p class="lead">Luanda · português de Angola · Kz · telemóvel no suporte · uma mão · sol · 2 GB de RAM. Sem entrega nem carga.</p>
+<p class="lead">A app abre no Início. Login, OTP e registo ficam na secção desativada e não entram nos 9 ecrãs.</p>
+<p class="path">Caminho feliz, 6 toques: Aceitar → Cheguei → Embarcou → Cheguei ao destino → Cobrar → Concluir. Se ninguém tocar em Concluir, o Início volta sozinho em 5 segundos.</p>
+<p class="wrap">Texto dentro do telemóvel: mínimo 16 px. Números críticos: 32 a 48 px, a preto <strong>#0A0A0A</strong> sobre branco (19,8:1) ou a branco sobre o fundo de noite (17,4:1). O teal de marca <strong>#1B6B7A</strong> com branco fica em 6,1:1, abaixo de 7:1, por isso não leva texto. Botões preenchidos: <strong>#134F5A</strong> com branco, 9,2:1. SOS: <strong>#7F1D1D</strong> com branco, 10,0:1. Estado = ícone + palavra + cor. Sem vídeo e sem animação. O anel da oferta está parado.</p>
+
+<h2 id="nucleo">Núcleo — 9 ecrãs</h2>
+<p class="wrap">O primeiro é o Início. Perfil, carteira e viagens abrem numa folha sobre o mapa, não numa barra de quatro separadores.</p>
+
+<div class="screens">
+
+  <article class="screen-card" id="inicio" data-order="first-core">
+    <h3>1 · Início</h3>
+    <p class="desc">Mapa, zonas de procura, uma linha de hoje, barra fina, um controlo.</p>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>86%</span></div>
+      <div class="body">
+        <div class="map">
+          <div class="heat" style="top:18%; left:8%;"><b>▲ Talatona · Alta</b></div>
+          <div class="heat" style="top:48%; left:46%;"><b>▲ Maianga · Alta</b></div>
+          <div class="you">Você</div>
+        </div>
+        <div class="dock">
+          <div class="card">
+            <button type="button" class="earn" aria-label="Hoje, abrir menu"><span>Hoje ›</span><span class="n32">25.670</span></button>
+            <div class="goal" aria-hidden="true"><span style="width:32.1%"></span></div>
+            <div class="t16">Kz · 2 corridas · meta 80.000</div>
+          </div>
+          <div class="t16 center">Toque para ficar offline</div>
+          <button type="button" class="btn giant" aria-label="Online. Ícone de verificação e a palavra Online.">✓ Online</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Momento: sábado 31 Out, 9:41, já online. Kz 25.670 é a Ana (7.820) mais o Pedro (17.850). A corrida-amostra ainda não entrou. A linha Hoje abre a folha. A rede é um ícone só.</p>
+  </article>
+
+  <article class="screen-card" id="oferta">
+    <h3>2 · Oferta</h3>
+    <p class="desc">Lida em cerca de 2 segundos. O ganho domina. O resto fica a um toque.</p>
+    <div class="phone">
+      <div class="status"><span>9:43</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>86%</span></div>
+      <div class="body">
+        <div class="headrow">
+          <div class="ring" aria-hidden="true"><i>12s</i></div>
+          <div>
+            <div class="t16">Nova corrida</div>
+            <div class="n32">Resta 12 s</div>
+          </div>
+        </div>
+        <div class="pad">
+          <div class="card center">
+            <div class="t16">O seu ganho · Kz</div>
+            <div class="n48">12.792</div>
+          </div>
+        </div>
+        <div class="facts">
+          <div class="fact"><span class="n32">2,1 km</span><span class="t16">recolha</span><span class="n32">6 min</span></div>
+          <div class="fact"><span class="n32">14,3 km</span><span class="t16">viagem</span><span class="n32">28 min</span></div>
+          <div class="fact"><span class="n32">Talatona</span><span class="t16">destino</span></div>
+          <button type="button" class="quiet slim">Mais detalhes</button>
+        </div>
+        <div class="dock">
+          <div class="handle" aria-hidden="true"></div>
+          <div class="t16 center">Recusas ilimitadas. A nota não muda.</div>
+          <button type="button" class="quiet small">Recusar</button>
+          <button type="button" class="btn">Aceitar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Recusar é o botão pequeno ou um deslizar para baixo. Sem diálogo. O passageiro paga Kz 15.050, o mesmo preço no telemóvel dele; esse bruto só aparece em Mais detalhes.</p>
+    <p class="removed">REMOVIDO. Pausa automática de 2 min (v2, Ecrã 16, regra D-15). Não há overlay. Recusas sem limite.</p>
+  </article>
+
+  <article class="screen-card" id="embarque">
+    <h3>3 · Até ao embarque</h3>
+    <p class="desc">Mapa, Cheguei, dois ícones, SOS ao canto.</p>
+    <div class="phone">
+      <div class="status"><span>9:47</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>84%</span></div>
+      <div class="body">
+        <button type="button" class="sos" aria-label="SOS, segure 2 segundos">SOS<br>2 s</button>
+        <div class="pad">
+          <div class="t16">Maria S. · Rua da Missão</div>
+          <div class="n32">2 min</div>
+        </div>
+        <div class="map">
+          <div class="you" style="top:40%; left:28%;">Você</div>
+          <div class="heat" style="top:58%; left:40%; width:140px;"><b>Embarque</b></div>
+        </div>
+        <div class="dock">
+          <div class="banner">▲ Na zona de embarque</div>
+          <div class="icons">
+            <button type="button" class="ibtn">☎ Ligar</button>
+            <button type="button" class="ibtn">✎ Chat</button>
+          </div>
+          <button type="button" class="btn">Cheguei</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">A oferta dizia 6 min; aqui faltam 2. A cerca sugere Cheguei e não confirma sozinha. SOS só em corrida activa, segurar 2 segundos. Um toque curto não chama.</p>
+  </article>
+
+  <article class="screen-card" id="espera">
+    <h3>4 · À espera</h3>
+    <p class="desc">Relógio grande. Embarcou em baixo. Cancelar é secundário.</p>
+    <div class="phone">
+      <div class="status"><span>9:50</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>84%</span></div>
+      <div class="body">
+        <button type="button" class="sos" aria-label="SOS, segure 2 segundos">SOS<br>2 s</button>
+        <div class="pad center">
+          <div class="t16">Maria S. · À espera</div>
+          <div class="timer">4:32</div>
+          <div class="t16">já no local</div>
+        </div>
+        <div class="map"></div>
+        <div class="dock">
+          <div class="icons">
+            <button type="button" class="ibtn">☎ Ligar</button>
+            <button type="button" class="ibtn">✎ Chat</button>
+          </div>
+          <button type="button" class="quiet">Cancelar (não apareceu)</button>
+          <button type="button" class="btn">Embarcou</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Cancelar não pede confirmação. Sem penalização quando o passageiro não aparece. O botão grande continua a ser Embarcou.</p>
+  </article>
+
+  <article class="screen-card" id="viagem">
+    <h3>5 · Em viagem</h3>
+    <p class="desc">Mapa e um botão. O ganho é o mesmo da oferta.</p>
+    <div class="phone">
+      <div class="status"><span>10:06</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>80%</span></div>
+      <div class="body">
+        <button type="button" class="sos" aria-label="SOS, segure 2 segundos">SOS<br>2 s</button>
+        <div class="pad">
+          <div class="t16">Talatona · faltam 18 min</div>
+          <div class="t16">Ganho Kz 12.792</div>
+        </div>
+        <div class="map">
+          <div class="you" style="top:36%; left:30%;">Você</div>
+          <div class="heat" style="top:55%; left:42%;"><b>Talatona</b></div>
+        </div>
+        <div class="dock">
+          <button type="button" class="ibtn">♪ Áudio</button>
+          <button type="button" class="btn long">Cheguei ao destino</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">A oferta dizia 28 min no total; este momento é a meio. Áudio é o som da rota, uma palavra. Em viagem não há teclado.</p>
+  </article>
+
+  <article class="screen-card" id="cobrar">
+    <h3>6 · Cobrar</h3>
+    <p class="desc">Multicaixa Express já escolhido. Referência só aqui.</p>
+    <div class="phone">
+      <div class="status"><span>10:24</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>78%</span></div>
+      <div class="body">
+        <div class="pad">
+          <div class="pill">✓ Multicaixa Express</div>
+          <div class="t16">Escolhido pelo passageiro</div>
+          <div class="card center">
+            <div class="t16">Passageiro paga · Kz</div>
+            <div class="n48">15.050</div>
+          </div>
+          <div class="eq">15.050 − 2.258 = 12.792</div>
+          <div class="card center">
+            <div class="t16">Referência</div>
+            <div class="ref">005 9024 7731</div>
+            <div class="t16 muted">App ou ATM</div>
+          </div>
+        </div>
+        <div class="dock">
+          <button type="button" class="quiet">Outro método</button>
+          <button type="button" class="btn">Cobrar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Duas decisões: Cobrar, ou Outro método. Cartão e dinheiro não estão nesta pilha. A referência desaparece se o método mudar.</p>
+  </article>
+
+  <article class="screen-card" id="feita">
+    <h3>7 · Corrida feita</h3>
+    <p class="desc">O ganho da oferta, outra vez. Estrelas já em 5. Não bloqueia.</p>
+    <div class="phone">
+      <div class="status"><span>10:25</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>78%</span></div>
+      <div class="body">
+        <div class="pad">
+          <div class="t16 center">Corrida feita</div>
+          <div class="card center">
+            <div class="t16">O seu ganho · Kz</div>
+            <div class="n48">12.792</div>
+          </div>
+          <div class="eq" id="equacao">15.050 − 2.258 = 12.792</div>
+          <div class="t16 center">Hoje 25.670 + 12.792 = 38.462</div>
+          <button type="button" class="stars" aria-label="5 estrelas, já preenchido"><span class="star" aria-hidden="true">★★★★★</span><span>5 estrelas</span></button>
+          <div class="t16 center">Opcional · um controlo só</div>
+          <button type="button" class="quiet">Reportar</button>
+          <div class="t16 center">Volta ao Início em 5 segundos</div>
+        </div>
+        <div class="dock">
+          <button type="button" class="btn">Concluir</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Três decisões no máximo: Concluir, a linha das estrelas, Reportar. A próxima oferta não espera pela nota. Reportar também existe em Viagens, e só aí.</p>
+  </article>
+
+  <article class="screen-card" id="ganhos">
+    <h3>8 · Ganhos</h3>
+    <p class="desc">Dia activo, um gráfico, três indicadores. O mesmo hoje do Início.</p>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>86%</span></div>
+      <div class="body">
+        <div class="pad">
+          <div class="t16">Ganhos</div>
+          <div class="tabs" role="tablist">
+            <div class="tab on" role="tab" aria-selected="true">Dia</div>
+            <div class="tab" role="tab">Semana</div>
+            <div class="tab" role="tab">Mês</div>
+          </div>
+          <div class="card center">
+            <div class="t16">Hoje · Kz</div>
+            <div class="n40">25.670</div>
+          </div>
+          <div class="card">
+            <div class="chart" aria-hidden="true">
+              <div class="bar" style="height:83%"></div>
+              <div class="bar" style="height:76%"></div>
+              <div class="bar" style="height:100%"></div>
+              <div class="bar" style="height:62%"></div>
+              <div class="bar" style="height:59%"></div>
+              <div class="bar hoje" style="height:53%"></div>
+              <div class="bar" style="height:4%"></div>
+            </div>
+            <div class="chart-labels"><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span>31</span><span>1</span></div>
+            <div class="t16">31 · hoje · rebordo preto</div>
+          </div>
+          <div class="card">
+            <div class="row"><span>Corridas</span><span class="n32">2</span></div>
+            <div class="row"><span>Online</span><span class="n32">3 h</span></div>
+            <div class="row"><span>Kz por corrida</span><span class="n32">12.835</span></div>
+          </div>
+        </div>
+        <div class="dock">
+          <button type="button" class="btn">Fechar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Mesmo momento do Início, antes da Maria. 25.670 / 2 = 12.835. Barras, líquidos: 40.000, 36.500, 48.200, 30.100, 28.400 e 25.670. Soma Kz 208.870. Domingo, dia 1, ainda é zero. A barra de hoje tem rebordo preto e a palavra hoje.</p>
+  </article>
+
+  <article class="screen-card" id="conta">
+    <h3>9 · Conta</h3>
+    <p class="desc">Perfil, carteira e viagens num sítio só. Chega-se pela folha do Início.</p>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>86%</span></div>
+      <div class="body">
+        <div class="pad">
+          <div class="t16">João D. · ★ 4,8 avaliação</div>
+          <div class="t16 muted">Toyota Corolla · LD-0042-AB</div>
+          <div class="card center">
+            <div class="t16">Esta semana · Kz</div>
+            <div class="n40">208.870</div>
+            <div class="t16">Inclui hoje 25.670</div>
+          </div>
+          <button type="button" class="listbtn">Levantar · impressão ou PIN</button>
+          <div class="t16">Ana M. · Belas · 7.820</div>
+          <div class="t16">Pedro L. · Aeroporto · 17.850</div>
+          <div class="eq">7.820 + 17.850 = 25.670</div>
+          <button type="button" class="quiet">Reportar</button>
+        </div>
+        <div class="dock">
+          <button type="button" class="btn">Fechar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">O saldo é a soma das barras de Ganhos. Levantar pede impressão ou PIN da carteira, nunca a palavra-passe da app. O Início não pede isto. Se o telemóvel ficar muito tempo parado, a mesma confirmação volta, só na carteira.</p>
+  </article>
+
+</div>
+
+<h2 id="estados">Estados — fora dos 9</h2>
+<p class="wrap">O mesmo Início e a mesma oferta, mais os desvios. Nenhum destes cartões entra na contagem dos 9.</p>
+
+<div class="screens">
+
+  <article class="screen-card" id="inicio-offline">
+    <h3>Início · offline</h3>
+    <p class="desc">O mesmo ecrã 1, às 7:00, antes de qualquer corrida.</p>
+    <div class="phone">
+      <div class="status"><span>7:00</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>90%</span></div>
+      <div class="body">
+        <div class="map">
+          <div class="heat" style="top:18%; left:8%;"><b>▲ Talatona · Alta</b></div>
+          <div class="heat" style="top:48%; left:46%;"><b>▲ Maianga · Alta</b></div>
+          <div class="you">Você</div>
+        </div>
+        <div class="dock">
+          <div class="card">
+            <button type="button" class="earn"><span>Hoje ›</span><span class="n32">0</span></button>
+            <div class="goal"><span style="width:0%"></span></div>
+            <div class="t16">Kz · 0 corridas · meta 80.000</div>
+          </div>
+          <div class="t16 center">Toque para ficar online</div>
+          <button type="button" class="btn giant off">○ Offline</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Kz 0 cabe neste momento. Ficar online não altera o dinheiro. O Kz 25.670 do núcleo aparece só depois da Ana e do Pedro.</p>
+  </article>
+
+  <article class="screen-card" id="inicio-depois">
+    <h3>Início · depois da amostra</h3>
+    <p class="desc">O mesmo ecrã 1, quando a Maria já foi concluída.</p>
+    <div class="phone">
+      <div class="status"><span>10:25</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>78%</span></div>
+      <div class="body">
+        <div class="map">
+          <div class="heat" style="top:18%; left:8%;"><b>▲ Talatona · Alta</b></div>
+          <div class="heat" style="top:48%; left:46%;"><b>▲ Maianga · Alta</b></div>
+          <div class="you">Você</div>
+        </div>
+        <div class="dock">
+          <div class="card">
+            <button type="button" class="earn"><span>Hoje ›</span><span class="n32">38.462</span></button>
+            <div class="goal"><span style="width:48.1%"></span></div>
+            <div class="t16">Kz · 3 corridas · meta 80.000</div>
+          </div>
+          <div class="t16 center">Toque para ficar offline</div>
+          <button type="button" class="btn giant">✓ Online</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">25.670 + 12.792 = 38.462. A semana passa de 208.870 para 221.662, porque só se soma o ganho. Não mostro média: 38.462 / 3 não é um Kz inteiro.</p>
+  </article>
+
+  <article class="screen-card" id="folha">
+    <h3>Início · folha</h3>
+    <p class="desc">O mapa fica visível. Dois destinos, não quatro separadores.</p>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>86%</span></div>
+      <div class="body">
+        <div class="map"></div>
+        <div class="dock">
+          <div class="handle"></div>
+          <button type="button" class="listbtn">Ganhos</button>
+          <button type="button" class="listbtn">Conta · carteira e viagens</button>
+          <button type="button" class="btn">Fechar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Sem barra Início / Ganhos / Viagens / Perfil. A folha tapa pouco: o mapa continua por cima.</p>
+  </article>
+
+  <article class="screen-card" id="detalhes">
+    <h3>Oferta · mais detalhes</h3>
+    <p class="desc">Um toque a partir da oferta. Os três valores juntos.</p>
+    <div class="phone">
+      <div class="status"><span>9:43</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>86%</span></div>
+      <div class="body">
+        <div class="map" style="flex:0 0 120px;"></div>
+        <div class="pad">
+          <div class="handle"></div>
+          <div class="t16">Maria S. · ★ 4,9 avaliação</div>
+          <div class="t16">Embarque · Rua da Missão</div>
+          <div class="t16">Destino · Talatona Shopping</div>
+          <div class="card center">
+            <div class="t16">O seu ganho · Kz</div>
+            <div class="n40">12.792</div>
+          </div>
+          <div class="eq">15.050 − 2.258 = 12.792</div>
+          <div class="t16">O passageiro paga os mesmos 15.050.</div>
+        </div>
+        <div class="dock">
+          <button type="button" class="btn">Aceitar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Heetch: um preço só. O telemóvel do passageiro mostra Kz 15.050. O motorista vê esse bruto e o ganho Kz 12.792. Não há outra tarifa.</p>
+  </article>
+
+  <article class="screen-card" id="chat">
+    <h3>Chat · frases feitas</h3>
+    <p class="desc">Acima de 10 km/h não há teclado.</p>
+    <div class="phone">
+      <div class="status"><span>9:47</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>84%</span></div>
+      <div class="body">
+        <div class="map"></div>
+        <div class="dock">
+          <div class="handle"></div>
+          <div class="t16">Chat com a Maria</div>
+          <button type="button" class="listbtn">Estou a chegar</button>
+          <button type="button" class="listbtn">Estou no local</button>
+          <div class="t16">Acima de 10 km/h não há teclado.</div>
+          <button type="button" class="btn">Fechar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Tocar numa frase envia e fecha. Ligar usa chamada com o número oculto; esse ecrã não é um dos 9.</p>
+  </article>
+
+  <article class="screen-card" id="outro">
+    <h3>Cobrar · outro método</h3>
+    <p class="desc">Atrás do link. Duas escolhas.</p>
+    <div class="phone">
+      <div class="status"><span>10:24</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>78%</span></div>
+      <div class="body">
+        <div class="pad">
+          <div class="t16">Outro método</div>
+          <div class="t16 muted">O passageiro tinha escolhido Multicaixa Express.</div>
+          <button type="button" class="listbtn">Dinheiro</button>
+          <button type="button" class="listbtn">Cartão · NFC</button>
+        </div>
+        <div class="dock">
+          <button type="button" class="quiet">Voltar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Sem referência neste passo. Sem número de cartão. Duas decisões, mais voltar.</p>
+  </article>
+
+  <article class="screen-card" id="dinheiro">
+    <h3>Cobrar · dinheiro</h3>
+    <p class="desc">Um número e um botão.</p>
+    <div class="phone">
+      <div class="status"><span>10:24</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>78%</span></div>
+      <div class="body">
+        <div class="pad">
+          <div class="pill">✓ Dinheiro</div>
+          <div class="card center">
+            <div class="t16">Receber do passageiro</div>
+            <div class="t16">Kz</div>
+            <div class="n48">15.050</div>
+          </div>
+          <div class="eq">15.050 − 2.258 = 12.792</div>
+        </div>
+        <div class="dock">
+          <button type="button" class="btn">Recebi</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Cobra o bruto. A comissão Kz 2.258 sai do ganho, que continua Kz 12.792. Sem referência Multicaixa.</p>
+  </article>
+
+  <article class="screen-card" id="nfc">
+    <h3>Cobrar · cartão NFC</h3>
+    <p class="desc">Sem dígitos do cartão. Um botão.</p>
+    <div class="phone">
+      <div class="status"><span>10:24</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>78%</span></div>
+      <div class="body">
+        <div class="pad">
+          <div class="pill">✓ Cartão · NFC</div>
+          <div class="card center">
+            <div class="t16">Passageiro paga · Kz</div>
+            <div class="n48">15.050</div>
+          </div>
+          <div class="n32 center">Aproxime o cartão</div>
+          <div class="eq">15.050 − 2.258 = 12.792</div>
+        </div>
+        <div class="dock">
+          <button type="button" class="btn long">Cobrar por NFC</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">NFC apenas. Sem introdução manual do cartão. Sem referência.</p>
+  </article>
+
+  <article class="screen-card" id="sem-rede">
+    <h3>Sem rede</h3>
+    <p class="desc">Ícone, palavra e um botão. O Início fica por baixo.</p>
+    <div class="phone">
+      <div class="status"><span>9:55</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Sem rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zM21 4l2 2-16 16-2-2z"/></svg>70%</span></div>
+      <div class="body">
+        <div class="map">
+          <div class="you">Você</div>
+        </div>
+        <div class="overlay">
+          <div class="sheet">
+            <div class="handle"></div>
+            <div class="pill">⊘ Sem rede</div>
+            <div class="t16">O que já fez fica neste telemóvel.</div>
+            <button type="button" class="btn long">Tentar de novo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="note">Corrida, cobrança e frases por enviar seguem quando a rede voltar. O ícone cortado no topo não está sozinho: a palavra Sem rede está na folha.</p>
+  </article>
+
+  <article class="screen-card" id="reportar">
+    <h3>Reportar</h3>
+    <p class="desc">Só a partir de Corrida feita ou de Viagens.</p>
+    <div class="phone">
+      <div class="status"><span>10:25</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>78%</span></div>
+      <div class="body">
+        <div class="pad">
+          <div class="t16">Reportar · Maria S.</div>
+          <button type="button" class="listbtn">✓ Não apareceu</button>
+          <button type="button" class="listbtn">Conduta</button>
+          <button type="button" class="listbtn">Pagamento</button>
+          <div class="t16 muted">Um motivo. Sem teclado.</div>
+        </div>
+        <div class="dock">
+          <button type="button" class="btn">Enviar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Um grupo de motivos conta como uma decisão, mais Enviar. Não está no Início, na oferta, nem durante a condução.</p>
+  </article>
+
+  <article class="screen-card" id="reativar">
+    <h3>Reativar conta</h3>
+    <p class="desc">Só se o token do aparelho for inválido. Um botão. Fora dos 9.</p>
+    <div class="phone">
+      <div class="status"><span>7:00</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>90%</span></div>
+      <div class="body">
+        <div class="pad" style="flex:1; justify-content:center;">
+          <div class="pill">⊘ Conta inactiva</div>
+          <div class="n32">Reativar</div>
+          <div class="t16">A sessão deste telemóvel expirou. Um toque pede um acesso novo, ligado a este aparelho.</div>
+        </div>
+        <div class="dock">
+          <button type="button" class="btn long">Reativar conta</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Sem palavra-passe, sem OTP, sem PIN neste ecrã. Não é o login. A inactividade longa pede impressão ou PIN só na carteira, e o Início continua a abrir.</p>
+  </article>
+
+</div>
+
+<h2>Noite — Início e Oferta</h2>
+<p class="wrap">Variante escura para a noite. De dia, ao sol, usam-se os ecrãs claros: o número crítico é preto sobre branco. Aqui o número é branco sobre #0E171B (17,4:1). O botão mantém #134F5A com branco (9,2:1).</p>
+
+<div class="screens">
+
+  <article class="screen-card" id="inicio-noite">
+    <h3>Início · noite</h3>
+    <p class="desc">O ecrã 1, as mesmas palavras, contraste de noite.</p>
+    <div class="phone dark">
+      <div class="status"><span>21:10</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>70%</span></div>
+      <div class="body">
+        <div class="map">
+          <div class="heat" style="top:18%; left:8%;"><b>▲ Talatona · Alta</b></div>
+          <div class="heat" style="top:48%; left:46%;"><b>▲ Maianga · Alta</b></div>
+          <div class="you">Você</div>
+        </div>
+        <div class="dock">
+          <div class="card">
+            <button type="button" class="earn"><span>Hoje ›</span><span class="n32">25.670</span></button>
+            <div class="goal"><span style="width:32.1%"></span></div>
+            <div class="t16">Kz · 2 corridas · meta 80.000</div>
+          </div>
+          <div class="t16 center">Toque para ficar offline</div>
+          <button type="button" class="btn giant">✓ Online</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">Mesmo dinheiro do Início claro. Ícone, palavra Online e o botão. A cor não está sozinha.</p>
+  </article>
+
+  <article class="screen-card" id="oferta-noite">
+    <h3>Oferta · noite</h3>
+    <p class="desc">O ecrã 2. O ganho continua a ser o número grande.</p>
+    <div class="phone dark">
+      <div class="status"><span>21:12</span><span><svg class="ico" viewBox="0 0 24 24" aria-label="Rede"><path fill="currentColor" d="M3 16h3v5H3zm5-4h3v9H8zm5-5h3v14h-3zm5-5h3v19h-3z"/></svg>70%</span></div>
+      <div class="body">
+        <div class="headrow">
+          <div class="ring" aria-hidden="true"><i>12s</i></div>
+          <div>
+            <div class="t16">Nova corrida</div>
+            <div class="n32">Resta 12 s</div>
+          </div>
+        </div>
+        <div class="pad">
+          <div class="card center">
+            <div class="t16">O seu ganho · Kz</div>
+            <div class="n48">12.792</div>
+          </div>
+        </div>
+        <div class="facts">
+          <div class="fact"><span class="n32">2,1 km</span><span class="t16">recolha</span><span class="n32">6 min</span></div>
+          <div class="fact"><span class="n32">14,3 km</span><span class="t16">viagem</span><span class="n32">28 min</span></div>
+          <div class="fact"><span class="n32">Talatona</span><span class="t16">destino</span></div>
+        </div>
+        <div class="dock">
+          <div class="t16 center">Recusas ilimitadas. A nota não muda.</div>
+          <button type="button" class="quiet small">Recusar</button>
+          <button type="button" class="btn">Aceitar</button>
+        </div>
+      </div>
+    </div>
+    <p class="note">12.792 outra vez, igual ao fim da corrida. A pausa automática continua removida.</p>
+  </article>
+
+</div>
+
+<section id="desativado">
+<h2>DESATIVADO (flag LOGIN_UI_ENABLED = false)</h2>
+<div class="section-off">
+  <p>Estes três ecrãs não contam para os 9. Com a flag a false, a app não os mostra e nenhum caminho chega aqui. O acesso é um token silencioso, ligado ao aparelho. Com a flag a true, login, OTP e registo funcionam outra vez como na v2, com os mesmos passos.</p>
+  <div class="screens">
+
+    <article class="screen-card">
+      <div class="stamp">DESATIVADO (flag LOGIN_UI_ENABLED = false)</div>
+      <h3>Login</h3>
+      <p class="desc">Telefone e código SMS. Arquivo da v2.</p>
+      <div class="phone" aria-disabled="true">
+        <div class="status"><span>9:41</span><span>86%</span></div>
+        <div class="body">
+          <div class="pad" style="flex:1; justify-content:center;">
+            <div class="n32 center">Ride Luanda</div>
+            <div class="t16">Número de telefone</div>
+            <div class="banner">+244 · 912 345 678</div>
+            <button type="button" class="btn long">Enviar código SMS</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="screen-card">
+      <div class="stamp">DESATIVADO (flag LOGIN_UI_ENABLED = false)</div>
+      <h3>OTP</h3>
+      <p class="desc">Seis dígitos e verificar. Arquivo da v2.</p>
+      <div class="phone" aria-disabled="true">
+        <div class="status"><span>9:42</span><span>86%</span></div>
+        <div class="body">
+          <div class="pad">
+            <div class="t16">Verificar código</div>
+            <div class="t16 muted">Enviado para +244 912 345 678</div>
+            <div class="row">
+              <div class="banner">4</div><div class="banner">8</div><div class="banner">2</div><div class="banner">1</div><div class="banner">·</div><div class="banner">·</div>
+            </div>
+            <button type="button" class="btn long">Verificar e entrar</button>
+            <button type="button" class="quiet">Alterar número</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="screen-card">
+      <div class="stamp">DESATIVADO (flag LOGIN_UI_ENABLED = false)</div>
+      <h3>Registo</h3>
+      <p class="desc">Nome, telefone, matrícula. Arquivo, fora do arranque.</p>
+      <div class="phone" aria-disabled="true">
+        <div class="status"><span>9:42</span><span>86%</span></div>
+        <div class="body">
+          <div class="pad">
+            <div class="t16">Criar conta</div>
+            <div class="banner">Nome</div>
+            <div class="banner">+244 · telefone</div>
+            <div class="banner">Matrícula</div>
+            <button type="button" class="btn long">Criar conta</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</div>
+</section>
+
+<h2 id="toques">Contagem de toques</h2>
+<p class="wrap">Caminho mínimo até a acção ficar feita. O v2 conta com o ecrã já desenhado: o telefone vem preenchido, o Multicaixa já está seleccionado, e há um botão Verificar.</p>
+<div class="wrap">
+<table>
+  <thead>
+    <tr><th>Caso</th><th>v2</th><th>v3</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ficar online, arranque a frio</td>
+      <td>9</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Tratar a oferta</td>
+      <td>Aceitar 1. Recusar 1. Ao 3.º recusar abre a pausa de 2 min.</td>
+      <td>Aceitar 1. Recusar 1, toque pequeno ou deslizar, sem pausa.</td>
+    </tr>
+    <tr>
+      <td>Viagem feliz</td>
+      <td>6. O último é Submeter e continuar, e a avaliação trava o regresso.</td>
+      <td>6. Aceitar, Cheguei, Embarcou, Cheguei ao destino, Cobrar, Concluir. O 6.º também acontece sozinho aos 5 segundos.</td>
+    </tr>
+    <tr>
+      <td>Pagamento</td>
+      <td>1 toque em Confirmar, com 3 métodos, referência, cancelar e confirmar no mesmo ecrã.</td>
+      <td>1 toque em Cobrar. O método já veio do passageiro. Outro método é opcional.</td>
+    </tr>
+    <tr>
+      <td>Avaliação</td>
+      <td>1, obrigatório para voltar ao mapa.</td>
+      <td>0. Cinco estrelas já marcadas. Não bloqueia a oferta seguinte.</td>
+    </tr>
+  </tbody>
+</table>
+<p>Os 9 toques do v2 para ficar online: Enviar código SMS, seis dígitos, Verificar e entrar, interruptor no cabeçalho. No v3 o token válido abre o Início e o botão Online é o único toque. Se o token for inválido, o desvio é Reativar conta (1) e só depois o Início.</p>
+<p>Até voltar a poder receber outra corrida, arranque a frio incluído: v2 = 15 toques seguidos (9 + 6). v3 = 6 se o fim for automático (online + Aceitar + Cheguei + Embarcou + Cheguei ao destino + Cobrar), ou 7 se tocar em Concluir.</p>
+<p>Cheguei, Embarcou, Cheguei ao destino e Cobrar mantêm-se. São confirmações de propósito, para a app não marcar a etapa sozinha.</p>
+</div>
+
+<h2 id="corrigido">Inconsistências corrigidas</h2>
+<div class="wrap">
+<ul>
+  <li><strong>Comissão a 15%.</strong> A v2 usava Kz 2.080 em cima de um bruto de Kz 15.050. 15.050 × 0,15 = 2.257,5. Metade para cima, ao Kz inteiro, dá Kz 2.258. Esses Kz 2.080 saíram.</li>
+  <li><strong>Oferta e fim com o mesmo ganho.</strong> A v2 mostrava Kz 13.850 na oferta e Kz 12.970 no fim. Os dois saíram. Oferta, detalhes, viagem, cobrança e corrida feita usam Kz 12.792.</li>
+  <li><strong>Login antes do valor.</strong> A v2 abria no telefone e no OTP. Com a flag a false a app abre no mapa. Login, OTP e registo ficam desativados, não apagados.</li>
+  <li><strong>Toques.</strong> Arranque 9 → 1. Avaliação 1 obrigatório → 0. A pausa depois de recusar desaparece, portanto não há toque para retomar.</li>
+  <li><strong>Texto de 9–11 px.</strong> Na v2, rótulos do gráfico, notas da tarifa e a regra de recusa estavam a 9–11 px. No telemóvel deste ficheiro o chão é 16 px e o dinheiro crítico vai a 32–48 px.</li>
+  <li><strong>Pilha de métodos.</strong> A v2 punha Multicaixa, cartão e dinheiro, mais a referência, no mesmo ecrã. Aqui o passageiro já escolheu. Outro método abre duas opções. A referência só existe com Multicaixa Express. O cartão é NFC, sem dígitos.</li>
+  <li><strong>Pausa automática removida.</strong> O Ecrã 16 da v2 e a regra D-15 (3 recusas, 2 minutos) não têm ecrã. Está marcado como REMOVIDO junto da oferta.</li>
+</ul>
+</div>
+
+<h2 id="regra-dinheiro">Regra de dinheiro</h2>
+<div class="wrap">
+<p id="regra-dinheiro-texto">Arredondar metade para cima, ao Kz inteiro. Comissão = 15% do bruto do passageiro. Kz 15.050 × 0,15 = Kz 2.257,5 → <strong>Kz 2.258</strong>. Ganho = Kz 15.050 − Kz 2.258 = <strong>Kz 12.792</strong>.</p>
+<table>
+  <thead>
+    <tr><th>Quem</th><th>Bruto</th><th>Comissão</th><th>Ganho</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Maria · amostra</td><td>Kz 15.050</td><td>Kz 2.258</td><td>Kz 12.792</td></tr>
+    <tr><td>Ana M. · Belas</td><td>Kz 9.200</td><td>Kz 1.380</td><td>Kz 7.820</td></tr>
+    <tr><td>Pedro L. · Aeroporto</td><td>Kz 21.000</td><td>Kz 3.150</td><td>Kz 17.850</td></tr>
+    <tr><td>Hoje, antes da amostra</td><td>Kz 30.200</td><td>Kz 4.530</td><td>Kz 25.670</td></tr>
+    <tr><td>Hoje, depois da amostra</td><td>Kz 45.250</td><td>Kz 6.788</td><td>Kz 38.462</td></tr>
+  </tbody>
+</table>
+<p>7.820 + 17.850 = 25.670. 9.200 + 21.000 = 30.200 e 1.380 + 3.150 = 4.530. 30.200 − 4.530 = 25.670. 25.670 + 12.792 = 38.462. 45.250 × 0,15 = 6.787,5 → 6.788, e 4.530 + 2.258 = 6.788. 45.250 − 6.788 = 38.462. Média das duas primeiras: 25.670 / 2 = 12.835.</p>
+<p>Semana, líquidos, mesmo momento do Início: 40.000 + 36.500 + 48.200 + 30.100 + 28.400 + 25.670 = 208.870. Domingo não entra. A carteira mostra esses 208.870 e diz que incluem o hoje. Depois da amostra a semana fica 208.870 + 12.792 = 221.662. A meta Kz 80.000 é um alvo, não uma soma. A barra das 9:41 está a 32,1% (25.670 / 80.000). Depois da amostra, 48,1% (38.462 / 80.000).</p>
+<p>Decisões fechadas: metade para cima ao Kz inteiro; comissão 15%; o passageiro escolhe o método antes do fim; a avaliação é opcional e não bloqueia.</p>
+</div>
+
+<h2 id="rubrica">Autoavaliação</h2>
+<div class="wrap">
+<p>Notas de 0 a 10. A soma pesada é 9,09, apresentada como <strong>9,1</strong>. Cada linha fica em 8 ou mais. Ninguém cronometrou isto com motoristas, por isso nenhuma linha é 10.</p>
+<table>
+  <thead>
+    <tr><th>Critério</th><th>Peso</th><th>Nota</th><th>Pontos</th><th>Evidência neste ficheiro</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Velocidade da oferta</td>
+      <td>20%</td>
+      <td class="score">9,3</td>
+      <td class="score">1,86</td>
+      <td>O ecrã 2 mostra o ganho 12.792 a 48 px, recolha 2,1 km e 6 min, viagem 14,3 km e 28 min, e Talatona. Endereço, nome e bruto abrem em Mais detalhes. O anel diz Resta 12 s, com número e palavra.</td>
+    </tr>
+    <tr>
+      <td>Economia de toques</td>
+      <td>15%</td>
+      <td class="score">9,4</td>
+      <td class="score">1,41</td>
+      <td>Online 9 → 1. Avaliação 1 → 0. Viagem feliz 6, e o regresso ao mapa também ocorre aos 5 segundos. Recusar não abre a pausa. Cheguei, Embarcou, destino e Cobrar ficam, para a etapa não se marcar sozinha.</td>
+    </tr>
+    <tr>
+      <td>Leitura de relance</td>
+      <td>15%</td>
+      <td class="score">9,0</td>
+      <td class="score">1,35</td>
+      <td>Números críticos a 32–48 px. Cada cartão usa no máximo dois tamanhos. Estado com ícone, palavra e cor: Online, Offline, Alta, Sem rede, Escolhido. O gráfico marca o sábado com rebordo e a palavra hoje.</td>
+    </tr>
+    <tr>
+      <td>Intuitividade</td>
+      <td>15%</td>
+      <td class="score">8,8</td>
+      <td class="score">1,32</td>
+      <td>Um botão primário em baixo, em português de Angola, no padrão de um controlo grande de online e de um ganho dominante na oferta. O token é silencioso. O único ecrã novo de acesso é Reativar conta, com um botão e sem código.</td>
+    </tr>
+    <tr>
+      <td>Ergonomia</td>
+      <td>10%</td>
+      <td class="score">9,2</td>
+      <td class="score">0,92</td>
+      <td>Primário com 72 px ou 88 px, largura total, no fundo do telemóvel de 640 px (os 35% de baixo cabem 224 px). O topo do mapa lê-se e não se edita. Ícones de Ligar e Chat com uma palavra, a 64 px.</td>
+    </tr>
+    <tr>
+      <td>Clareza do dinheiro</td>
+      <td>10%</td>
+      <td class="score">9,6</td>
+      <td class="score">0,96</td>
+      <td>Kz 15.050 − Kz 2.258 = Kz 12.792 na oferta detalhada, na cobrança, no dinheiro, no NFC e na corrida feita. O hoje online é 25.670 e passa a 38.462. A carteira 208.870 é a soma das barras e inclui esse hoje.</td>
+    </tr>
+    <tr>
+      <td>Resiliência</td>
+      <td>10%</td>
+      <td class="score">8,4</td>
+      <td class="score">0,84</td>
+      <td>Sem rede: ícone cortado, a palavra Sem rede, um botão, e a frase de que o trabalho fica no telemóvel. Token inválido: um ecrã, um botão, sem código. O Início offline e o Início online são o mesmo ecrã.</td>
+    </tr>
+    <tr>
+      <td>Segurança</td>
+      <td>5%</td>
+      <td class="score">8,6</td>
+      <td class="score">0,43</td>
+      <td>SOS só até ao embarque, na espera e em viagem. Canto, palavra SOS, 2 s, premir sem soltar. Chat em andamento: duas frases, sem teclado acima de 10 km/h. Reportar fica para o fim. Levantar pede impressão ou PIN, separado do arranque.</td>
+    </tr>
+  </tbody>
+</table>
+<p>1,86 + 1,41 + 1,35 + 1,32 + 0,92 + 0,96 + 0,84 + 0,43 = <strong>9,09</strong>. Nota global <strong>9,1</strong>.</p>
+<div class="blocks">
+  <p><strong>O que impede um 10.</strong> Não houve um teste de usabilidade ao vivo com 5 motoristas em Luanda, ao sol, com o telemóvel no suporte, a uma mão, num aparelho de 2 GB. Não há pontuação SUS: não foi medida, e não a invento. O contraste foi calculado pela razão de luminância, não com um luxímetro na rua. O mapa deste ficheiro é um esquema, não a navegação real. Falta ver se a sessão silenciosa e o ecrã Reativar se percebem sem explicação, e se o SOS premido em andamento é encontrável num susto.</p>
+</div>
+</div>
+
+<p class="wrap" style="margin-top:28px;">Wireframe v3 · estático · sem fontes externas · sem imagens de rede. Não altera a app Android. Piloto: Luanda.</p>
+
+</body>
+</html>

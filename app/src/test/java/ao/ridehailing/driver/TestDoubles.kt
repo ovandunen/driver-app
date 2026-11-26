@@ -23,10 +23,17 @@ import ao.ridehailing.driver.feature.call.AudioCall
 import ao.ridehailing.driver.feature.call.SignallingClient
 import ao.ridehailing.driver.feature.home.PresenceControl
 import ao.ridehailing.driver.feature.onboarding.OnboardingSchedule
+import ao.ridehailing.driver.core.location.DriverFix
 import ao.ridehailing.driver.core.location.LocationPulse
+import ao.ridehailing.driver.core.location.LocationSource
+import ao.ridehailing.driver.core.location.SOURCE_GPS
 
 class MemorySession : OnlineSession {
     val events = mutableListOf<String>()
+
+    override suspend fun connect(driverId: String) {
+        events += "connect|$driverId"
+    }
 
     override suspend fun subscribe(topic: String, qos: Int) {
         events += "sub|$topic|$qos"
@@ -43,6 +50,20 @@ class MemorySession : OnlineSession {
     override suspend fun disconnectSession() {
         events += "disconnect"
     }
+}
+
+class MemoryLocation(private val fix: DriverFix? = null) : LocationSource {
+    var started = false
+    override val kind = SOURCE_GPS
+    override fun start() {
+        started = true
+    }
+
+    override fun stop() {
+        started = false
+    }
+
+    override suspend fun read(): DriverFix? = fix
 }
 
 class MemoryPulse : LocationPulse {
