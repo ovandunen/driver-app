@@ -15,3 +15,5 @@ Yet google service is not needed
 ## Phase 1
 
 Phone entry accepts an Angolan mobile number (`9` plus 8 digits, with or without `+244`). OTP verify stores the access token in `EncryptedSharedPreferences` and opens the home stub. Other routes exist as titles only.
+
+Communicates with passenger and needs a MQTT broker to run
